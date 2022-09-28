@@ -13,7 +13,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'florina-digital.herokuapp.com' ,'www.florina.digital', 'florina.digital']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 DEFAULT_APPS = [
@@ -48,7 +48,11 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'screens'),
+            os.path.join(BASE_DIR, 'components'),
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,7 +68,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dbnamehere',
+        'NAME': 'didi',
         'USER': os.environ["POSTGRESQL_USER"],
         'PASSWORD': os.environ["POSTGRESQL_PASSWORD"],
         'HOST': 'localhost',
