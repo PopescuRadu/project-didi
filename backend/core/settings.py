@@ -26,11 +26,11 @@ DEFAULT_APPS = [
 ]
 
 PLUGIN_APPS = [
-
+    'django_countries',
 ]
 
 CUSTOM_APPS = [
-
+    'products',
 ]
 
 INSTALLED_APPS = PLUGIN_APPS + DEFAULT_APPS + CUSTOM_APPS
@@ -50,8 +50,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
-            os.path.join(BASE_DIR, 'screens'),
-            os.path.join(BASE_DIR, 'components'),
+            os.path.join(BASE_DIR, 'frontend/screens'),
+            os.path.join(BASE_DIR, 'frontend/components'),
             ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -68,7 +68,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'didi',
+        'NAME': 'didina',
         'USER': os.environ["POSTGRESQL_USER"],
         'PASSWORD': os.environ["POSTGRESQL_PASSWORD"],
         'HOST': 'localhost',
@@ -83,9 +83,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.pa ssword_validation.CommonPasswordValidator',
+    # },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
@@ -96,7 +96,6 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
