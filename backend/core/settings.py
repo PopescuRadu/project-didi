@@ -27,15 +27,22 @@ DEFAULT_APPS = [
 
 PLUGIN_APPS = [
     'django_countries',
+    'colorfield',
+    'rest_framework',
+    'corsheaders',
 ]
 
 CUSTOM_APPS = [
-    'products',
+    'store',
+    'api',
 ]
 
 INSTALLED_APPS = PLUGIN_APPS + DEFAULT_APPS + CUSTOM_APPS
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,9 +56,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),
-            os.path.join(BASE_DIR, 'frontend/screens'),
-            os.path.join(BASE_DIR, 'frontend/components'),
+            os.path.join(BASE_DIR, 'frontend/build'),
             ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -68,7 +73,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'didina',
+        'NAME': 'Didi',
         'USER': os.environ["POSTGRESQL_USER"],
         'PASSWORD': os.environ["POSTGRESQL_PASSWORD"],
         'HOST': 'localhost',
@@ -101,13 +106,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, '../frontend/build/static'),
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
 if os.getcwd() == "/app":
     DEBUG = False
 
-
+CORS_ALLOW_ALL_ORIGINS = True

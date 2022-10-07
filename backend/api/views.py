@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from .serializers import *
 from .views import *
 
+from django.shortcuts import get_object_or_404
 
 @api_view(["GET"])
 def api_routes(request): #overview of api routes endpoints
@@ -20,35 +21,25 @@ def api_routes(request): #overview of api routes endpoints
         'description': 'returns a single product object',
     },
     {
-        'Endpoint': "/products/variants/",
-        'method': "GET",
-        'description': 'returns all product variants',
+        'Endpoint': "/customer/",
+        'methods' : "GET, POST",
+        'description': "returns & retrieves customers",
     },
     {
-        'Endpoint': "/products/variants/<slug:slug>/",
-        'method': "GET",
-        'description': 'returns a single product variant object',
+        'Endpoint': "/customer/shipping-information",
+        'methods' : "POST",
+        'description': "retrieve the shipping information of the order based on customers device",
     },
     {
-        'Endpoint': "/products/attributes/",
-        'method': "GET",
-        'description': 'returns all product attributes objects',
+        'Endpoint': "/order-item/",
+        'methods' : "GET, POST",
+        'description': "return & retrieve products added inside the shopping cart based on customers device",
     },
     {
-        'Endpoint': "/products/attributes/choices/",
-        'method': "GET",
-        'description': 'returns all product attributes choices',
-    },
-    {
-        'Endpoint': "/products/images/",
-        'method': "GET",
-        'description': 'returns all product images',
-    },
-    {
-        'Endpoint': "/products/variants/images/",
-        'method': "GET",
-        'description': 'returns all product variants images',
-    },
+        'Endpoint': "/order/",
+        'methods' : "GET, POST",
+        'description': "return & retrieve orders that have performed the checkout operation based on customers device",
+    }
     ]
     return Response(routes)
 
@@ -58,58 +49,47 @@ def api_products(request): #get all products
     serializer = ProductSerializer(objects, many=True)
     return Response(serializer.data)
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def api_products_object(request, slug): #get one product object
-    object = Product.objects.get(slug=slug)
-    serializer = ProductSerializer(object, many=False)
-    return Response(serializer.data)
+    if request.method == "GET":
+        object = Product.objects.get(slug=slug)
+        serializer = ProductSerializer(object, many=False)
+        return Response(serializer.data)
 
-@api_view(["GET"])
-def api_products_attributes(request): #get all product attribute objects
-    objects = ProductAttribute.objects.all()
-    serializer = ProductAttributeSerializer(objects, many=True)
-    return Response(serializer.data)
+    elif request.method == "POST":
+        product = get_object_or_404(Product, slug=slug)
+        print(request.data)
+        try:
+            customer = request.user.customer
+        except:
+            device = request.COOKIES['device']
+            customer, created = Customer.objects.get_or_create(device=device)
+        
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+        orderItem.quantity = request.POST['quantity']
 
-@api_view(["GET"])
-def api_products_attributes_choices(request): #get all product attribute choices objects
-    objects = ProductAttributeChoice.objects.all()
-    serializer = ProductAttributeChoiceSerializer(objects, many=True)
-    return Response(serializer.data)
+@api_view(["GET", "POST"])
+def api_order_items(request):
+    pass
 
-@api_view(["GET"])
-def api_products_variants(request): #get all product variants objects
-    objects = ProductVariant.objects.all()
-    serializer = ProductVariantSerializer(objects, many=True)
-    return Response(serializer.data)
+@api_view(["GET", "POST"])
+def api_shipping_information(request):
+    pass
 
-@api_view(["GET"])
-def api_products_variants_object(request, slug): #get a single product attribute object
-    object = Product.objects.get(slug=slug)
-    serializer = ProductVariantSerializer(object, many=False)
-    return Response(serializer.data)
+@api_view(["GET", "POST"])
+def api_orders(request):
+    pass
 
-@api_view(["GET"])
-def api_products_images(request): #get all product images
-    objects = ProductImage.objects.all()
-    serializer = ProductImageSerializer(objects, many=True)
-    return Response(serializer.data)
+@api_view(["GET", "POST"])
+def api_customer(request, device_id):
 
-@api_view(["GET"])
-def api_products_variants_images(request): #get all product images
-    objects = ProductVariantImage.objects.all()
-    serializer = ProductVariantImageSerializer(objects, many=True)
-    return Response(serializer.data)
+    if request.method == "GET":
+        object = Customer.objects.get(device=device_id)
+        serializer = CustomerSerializer(object, many=False)
+        return Response(serializer.data)
 
-@api_view(["GET"])
-def cart_view(request):
-    objects = Cart.objects.all()
-    serializer = CartSerializer(objects, many=True)
-    return Response(serializer.data)
-
-@api_view(["POST"])
-def cart_post(request):
-    serializer = CartSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        print("saved cart posted")
-    return Response(serializer.data)
+    elif request.method == "POST":
+        serialzer = CustomerSerializer()
+        if request.is_valid():
+            obj = request.data.get("device")
